@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Nav from './components/Nav';
 import Icon from './components/Icon';
@@ -39,38 +40,43 @@ export default function App() {
           <div className="p-container p-hero-grid">
             <div>
               <span className="p-kicker">01 · PROFIL PRIBADI</span>
+
               <h1>
                 Moh. Adris <em>A.W.F.</em>
               </h1>
+
               <p>
                 Pelajar RPL yang sedang mengembangkan kemampuan di bidang web
                 development, backend, database, dan pembuatan aplikasi sederhana.
               </p>
+
               <p>
                 Saya menyukai proses belajar melalui proyek nyata dan terus
                 meningkatkan kemampuan coding secara bertahap.
               </p>
+
               <div className="p-actions">
                 <a className="p-btn p-dark" href="#projects">
                   Lihat proyek <Icon name="arrow" size={17} />
                 </a>
+
                 <a className="p-btn p-outline" href="#contact">
                   Hubungi saya
                 </a>
               </div>
             </div>
 
+            {/* FOTO PROFIL */}
             <div className="portrait-card">
-              <div className="portrait" aria-label="Area foto profil">
-<div className="portrait" aria-label="Foto profil">
-  <img
-    src="/images/foto-profil.jpg"
-    alt="Foto Profil Moh. Adris A.W.F."
-    className="profile-photo"
-  />
-  <div className="grid-lines" />
-</div>                <div className="grid-lines" />
+              <div className="portrait" aria-label="Foto profil">
+                <img
+                  src="/images/foto-profil.jpg"
+                  alt="Foto Profil Moh. Adris A.W.F."
+                  className="profile-photo"
+                />
+                <div className="grid-lines" />
               </div>
+
               <div className="portrait-caption">
                 <b>Moh. Adris A.W.F</b>
                 <small>Web Developer · Student</small>
@@ -84,26 +90,46 @@ export default function App() {
           <div className="p-container two-col">
             <div>
               <span className="p-kicker">02 · TENTANG SAYA</span>
+
               <h2>
                 Belajar teknologi,
                 <br />
                 <i>membangun karya.</i>
               </h2>
             </div>
+
             <div>
               <p className="lead">
-                Saya adalah pelajar yang memiliki ketertarikan pada dunia teknologi,
-                khususnya pengembangan website dan aplikasi.
+                Saya adalah pelajar yang memiliki ketertarikan pada dunia
+                teknologi, khususnya pengembangan website dan aplikasi.
               </p>
+
               <p>
-                Saya sedang mempelajari frontend, backend, database, API, serta cara
-                membuat aplikasi yang rapi, responsif, dan mudah digunakan.
+                Saya sedang mempelajari frontend, backend, database, API,
+                serta cara membuat aplikasi yang rapi, responsif, dan mudah
+                digunakan.
               </p>
+
               <div className="biodata-list">
-                <div><span>Nama</span><strong>Moh. Adris A.W.F</strong></div>
-                <div><span>Status</span><strong>Pelajar / Siswa RPL</strong></div>
-                <div><span>Bidang</span><strong>Web Development</strong></div>
-                <div><span>Prinsip</span><strong>Belajar · Berproses · Berkarya</strong></div>
+                <div>
+                  <span>Nama=</span>
+                  <strong>Moh. Adris A.W.F</strong>
+                </div>
+
+                <div>
+                  <span>Status=</span>
+                  <strong>Pelajar / Siswa RPL</strong>
+                </div>
+
+                <div>
+                  <span>Bidang=</span>
+                  <strong>Web Development</strong>
+                </div>
+
+                <div>
+                  <span>Prinsip=</span>
+                  <strong>Belajar · Berproses · Berkarya</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -114,22 +140,40 @@ export default function App() {
           <div className="p-container two-col">
             <div>
               <span className="p-kicker">03 · PROFIL PROFESIONAL</span>
+
               <h2>
                 Junior Web
                 <br />
                 <i>Developer.</i>
               </h2>
             </div>
+
             <div>
               <p className="lead">
-                Fokus saya saat ini adalah membangun fondasi sebagai Junior Web Developer
-                melalui latihan, tugas sekolah, dan proyek mandiri.
+                Fokus saya saat ini adalah membangun fondasi sebagai Junior Web
+                Developer melalui latihan, tugas sekolah, dan proyek mandiri.
               </p>
+
               <div className="biodata-list">
-                <div><span>Jabatan</span><strong>Pelajar / Junior Web Developer</strong></div>
-                <div><span>Instansi</span><strong>SMKN 1 Jenpo</strong></div>
-                <div><span>Bidang</span><strong>Frontend · Backend · Database</strong></div>
-                <div><span>Target</span><strong>Mengembangkan kemampuan profesional</strong></div>
+                <div>
+                  <span>Jabatan=</span>
+                  <strong>Pelajar / Junior Web Developer</strong>
+                </div>
+
+                <div>
+                  <span>Instansi=</span>
+                  <strong>SMKN 1 Jenpo</strong>
+                </div>
+
+                <div>
+                  <span>Bidang=</span>
+                  <strong>Frontend · Backend · Database</strong>
+                </div>
+
+                <div>
+                  <span>Target=</span>
+                  <strong>Mengembangkan kemampuan profesional</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -139,22 +183,56 @@ export default function App() {
         <section id="education" className="p-section p-muted">
           <div className="p-container">
             <span className="p-kicker">04 · PENDIDIKAN</span>
-            <h2>Perjalanan <i>pendidikan saya.</i></h2>
-            <div className="education-list" style={{ marginTop: 55, display: 'grid', gap: 20 }}>
+
+            <h2>
+              Perjalanan <i>pendidikan saya.</i>
+            </h2>
+
+            <div
+              className="education-list"
+              style={{
+                marginTop: 55,
+                display: 'grid',
+                gap: 20,
+              }}
+            >
               <div className="education-card">
-                <span>2021<br />— 2024</span>
+                <span>
+                  2021
+                  <br />— 2024
+                </span>
+
                 <div>
-                  <span className="p-kicker">SEKOLAH MENENGAH PERTAMA</span>
+                  <span className="p-kicker">
+                    SEKOLAH MENENGAH PERTAMA
+                  </span>
+
                   <h3>SMPN 4</h3>
-                  <p>Menyelesaikan pendidikan tingkat SMP pada tahun 2021 hingga 2024.</p>
+
+                  <p>
+                    Menyelesaikan pendidikan tingkat SMP pada tahun 2021
+                    hingga 2024.
+                  </p>
                 </div>
               </div>
+
               <div className="education-card">
-                <span>2024<br />— Sekarang</span>
+                <span>
+                  2024
+                  <br />— Sekarang
+                </span>
+
                 <div>
-                  <span className="p-kicker">SEKOLAH MENENGAH KEJURUAN</span>
+                  <span className="p-kicker">
+                    SEKOLAH MENENGAH KEJURUAN
+                  </span>
+
                   <h3>SMKN 1 JENPO</h3>
-                  <p>Sedang menempuh pendidikan SMK dan mempelajari Rekayasa Perangkat Lunak.</p>
+
+                  <p>
+                    Sedang menempuh pendidikan SMK dan mempelajari Rekayasa
+                    Perangkat Lunak.
+                  </p>
                 </div>
               </div>
             </div>
@@ -165,11 +243,40 @@ export default function App() {
         <section id="experience" className="p-section">
           <div className="p-container">
             <span className="p-kicker">05 · PENGALAMAN</span>
-            <h2>Pengalaman <i>belajar & proyek.</i></h2>
-            <div className="skill-grid" style={{ marginTop: 45 }}>
-              <div className="skill-card"><span>01</span><h3>Belajar Coding</h3><p>Mengerjakan latihan HTML, CSS, JavaScript, React, Node.js, dan SQL.</p></div>
-              <div className="skill-card"><span>02</span><h3>Proyek Website</h3><p>Membangun website profil pribadi dan mini e-commerce sebagai latihan.</p></div>
-              <div className="skill-card"><span>03</span><h3>Database</h3><p>Membuat tabel, relasi, query, dan koneksi aplikasi ke MySQL.</p></div>
+
+            <h2>
+              Pengalaman <i>belajar & proyek.</i>
+            </h2>
+
+            <div
+              className="skill-grid"
+              style={{ marginTop: 45 }}
+            >
+              <div className="skill-card">
+                <span>01</span>
+                <h3>Belajar Coding</h3>
+                <p>
+                  Mengerjakan latihan HTML, CSS, JavaScript, React, Node.js,
+                  dan SQL.
+                </p>
+              </div>
+
+              <div className="skill-card">
+                <span>02</span>
+                <h3>Proyek Website</h3>
+                <p>
+                  Membangun website profil pribadi dan mini e-commerce
+                  sebagai latihan.
+                </p>
+              </div>
+
+              <div className="skill-card">
+                <span>03</span>
+                <h3>Database</h3>
+                <p>
+                  Membuat tabel, relasi, query, dan koneksi aplikasi ke MySQL.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -178,11 +285,17 @@ export default function App() {
         <section id="skills" className="p-section p-muted">
           <div className="p-container">
             <span className="p-kicker">06 · KEAHLIAN</span>
-            <h2>Keahlian yang <i>sedang dikembangkan.</i></h2>
+
+            <h2>
+              Keahlian yang <i>sedang dikembangkan.</i>
+            </h2>
+
             <div className="skill-grid">
               {skills.map(([no, title, desc]) => (
                 <div className="skill-card" key={no}>
-                  <span>{no}</span><h3>{title}</h3><p>{desc}</p>
+                  <span>{no}</span>
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
                 </div>
               ))}
             </div>
@@ -194,29 +307,83 @@ export default function App() {
           <div className="p-container">
             <div className="project-head">
               <div>
-                <span className="p-kicker">07 · KARYA / PORTOFOLIO</span>
+                <span className="p-kicker">
+                  07 · KARYA / PORTOFOLIO
+                </span>
+
                 <h2>Project yang bisa dicoba.</h2>
               </div>
-              <span className="project-count">02 / PROJECT</span>
+
+              <span className="project-count">
+                02 / PROJECT
+              </span>
             </div>
-            <div style={{ display: 'grid', gap: 24 }}>
+
+            <div
+              style={{
+                display: 'grid',
+                gap: 24,
+              }}
+            >
               {projects.map((project, index) => (
-                <article className="project-card" key={project.title}>
+                <article
+                  className="project-card"
+                  key={project.title}
+                >
                   <div className="project-visual">
-                    <div className="browser-bar"><i /><i /><i /><span>project-{index + 1}.local</span></div>
+                    <div className="browser-bar">
+                      <i />
+                      <i />
+                      <i />
+                      <span>
+                        project-{index + 1}.local
+                      </span>
+                    </div>
+
                     <div className="mock-store">
                       <small>PORTFOLIO · PROJECT</small>
+
                       <b>{project.title}</b>
-                      <div className="mock-products"><span /><span /><span /></div>
+
+                      <div className="mock-products">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
                     </div>
                   </div>
+
                   <div className="project-copy">
-                    <span className="p-kicker">PROJECT {String(index + 1).padStart(2, '0')}</span>
+                    <span className="p-kicker">
+                      PROJECT {String(index + 1).padStart(2, '0')}
+                    </span>
+
                     <h3>{project.title}</h3>
+
                     <p>{project.description}</p>
-                    <div className="tag-row">{project.tags.map(tag => <span key={tag}>{tag}</span>)}</div>
-                    <a className="project-link" href={project.link} target={project.link.startsWith('http') ? '_blank' : undefined} rel={project.link.startsWith('http') ? 'noreferrer' : undefined}>
-                      Buka project <Icon name="external" size={16} />
+
+                    <div className="tag-row">
+                      {project.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+
+                    <a
+                      className="project-link"
+                      href={project.link}
+                      target={
+                        project.link.startsWith('http')
+                          ? '_blank'
+                          : undefined
+                      }
+                      rel={
+                        project.link.startsWith('http')
+                          ? 'noreferrer'
+                          : undefined
+                      }
+                    >
+                      Buka project
+                      <Icon name="external" size={16} />
                     </a>
                   </div>
                 </article>
@@ -228,12 +395,26 @@ export default function App() {
         {/* 08 SERTIFIKAT / PRESTASI */}
         <section id="certificates" className="p-section p-muted">
           <div className="p-container">
-            <span className="p-kicker">08 · SERTIFIKAT / PRESTASI</span>
-            <h2>Sertifikat, pelatihan <i>& kompetensi.</i></h2>
-            <div className="skill-grid" style={{ marginTop: 45 }}>
-              <div className="skill-card"><span>01</span><h3>Kompetensi RPL</h3><p>Pengembangan kemampuan pemrograman dan pembuatan aplikasi sebagai siswa RPL.</p></div>
-              <div className="skill-card"><span>02</span><h3>Pelatihan</h3><p>Dokumentasikan sertifikat atau pelatihan coding yang sudah diikuti pada bagian ini.</p></div>
-              <div className="skill-card"><span>03</span><h3>Prestasi</h3><p>Tempat untuk menampilkan penghargaan, pencapaian, atau hasil kompetisi.</p></div>
+            <span className="p-kicker">
+              08 · SERTIFIKAT / PRESTASI
+            </span>
+
+            <h2>
+              Sertifikat, pelatihan <i>& kompetensi.</i>
+            </h2>
+
+            <div
+              className="skill-grid"
+              style={{ marginTop: 45 }}
+            >
+              <div className="skill-card">
+                <span>01</span>
+                <h3>MASIH BELUM TERBIT</h3>
+                <p>
+                  Sertifikat dan kompetensi akan ditambahkan setelah
+                  diterbitkan.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -242,15 +423,44 @@ export default function App() {
         <section id="activities" className="p-section">
           <div className="p-container two-col">
             <div>
-              <span className="p-kicker">09 · KEGIATAN</span>
-              <h2>Kegiatan belajar, <i>workshop & proyek.</i></h2>
+              <span className="p-kicker">
+                09 · KEGIATAN
+              </span>
+
+              <h2>
+                Kegiatan belajar, <i>workshop & proyek.</i>
+              </h2>
             </div>
+
             <div>
-              <p className="lead">Aktivitas yang mendukung proses belajar dan pengembangan kemampuan teknologi.</p>
+              <p className="lead">
+                Dokumentasi kegiatan belajar, workshop, dan proyek yang telah
+                saya lakukan.
+              </p>
+
+              {/* FOTO KEGIATAN */}
+              <div className="kegiatan-photo">
+                <img
+                  src="/images/kegiatan.jpeg"
+                  alt="Foto kegiatan"
+                />
+              </div>
+
               <div className="biodata-list">
-                <div><span>Belajar</span><strong>Latihan coding dan database</strong></div>
-                <div><span>Workshop</span><strong>Kegiatan teknologi dan pengembangan web</strong></div>
-                <div><span>Proyek</span><strong>Pembuatan website dan aplikasi sederhana</strong></div>
+                <div>
+                  <span>01</span>
+                  <strong>Kegiatan belajar</strong>
+                </div>
+
+                <div>
+                  <span>02</span>
+                  <strong>Workshop</strong>
+                </div>
+
+                <div>
+                  <span>03</span>
+                  <strong>Proyek</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -259,12 +469,43 @@ export default function App() {
         {/* 10 ARTIKEL / BLOG */}
         <section id="blog" className="p-section p-muted">
           <div className="p-container">
-            <span className="p-kicker">10 · ARTIKEL / BLOG</span>
-            <h2>Catatan <i>perjalanan belajar.</i></h2>
-            <div className="skill-grid" style={{ marginTop: 45 }}>
-              <article className="skill-card"><span>01</span><h3>Belajar React</h3><p>Catatan tentang component, props, state, dan struktur project React.</p></article>
-              <article className="skill-card"><span>02</span><h3>Belajar Backend</h3><p>Catatan membuat REST API menggunakan Node.js dan Express.</p></article>
-              <article className="skill-card"><span>03</span><h3>Belajar MySQL</h3><p>Catatan membuat database, tabel, relasi, dan query untuk aplikasi web.</p></article>
+            <span className="p-kicker">
+              10 · ARTIKEL / BLOG
+            </span>
+
+            <h2>
+              Catatan <i>perjalanan belajar.</i>
+            </h2>
+
+            <div
+              className="skill-grid"
+              style={{ marginTop: 45 }}
+            >
+              <article className="skill-card">
+                <span>01</span>
+                <h3>Belajar React</h3>
+                <p>
+                  Catatan tentang component, props, state, dan struktur
+                  project React.
+                </p>
+              </article>
+
+              <article className="skill-card">
+                <span>02</span>
+                <h3>Belajar Backend</h3>
+                <p>
+                  Catatan membuat REST API menggunakan Node.js dan Express.
+                </p>
+              </article>
+
+              <article className="skill-card">
+                <span>03</span>
+                <h3>Belajar MySQL</h3>
+                <p>
+                  Catatan membuat database, tabel, relasi, dan query untuk
+                  aplikasi web.
+                </p>
+              </article>
             </div>
           </div>
         </section>
@@ -274,14 +515,42 @@ export default function App() {
           <div className="p-container contact-grid">
             <div>
               <span className="p-kicker">11 · KONTAK</span>
-              <h2>Mari <em>terhubung.</em></h2>
+
+              <h2>
+                Mari <em>terhubung.</em>
+              </h2>
             </div>
+
             <div>
-              <p>Silakan hubungi saya untuk berdiskusi tentang project, pembelajaran, atau kolaborasi.</p>
-              <a className="contact-mail" href="mailto:hello@example.com"><Icon name="mail" /> hello@example.com</a>
+              <p>
+                Silakan hubungi saya untuk berdiskusi tentang project,
+                pembelajaran, atau kolaborasi.
+              </p>
+
+              <a
+                className="contact-mail"
+                href="mailto:hello@example.com"
+              >
+                <Icon name="mail" /> hello@example.com
+              </a>
+
               <div className="contact-social">
-                <a href="https://github.com/" target="_blank" rel="noreferrer"><Icon name="github" /> GitHub</a>
-                <a className="p-btn p-outline" href="https://wa.me/6289632070806" target="_blank" rel="noreferrer">WhatsApp</a>
+                <a
+                  href="https://github.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Icon name="github" /> GitHub
+                </a>
+
+                <a
+                  className="p-btn p-outline"
+                  href="https://wa.me/6289632070806"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  WhatsApp
+                </a>
               </div>
             </div>
           </div>
@@ -290,9 +559,15 @@ export default function App() {
 
       {/* 12 FOOTER */}
       <footer className="p-footer">
-        <span>Moh. Adris A.W.F · Portfolio</span>
-        <span>© 2026 · Semua hak dilindungi</span>
+        <span>
+          Moh. Adris A.W.F · Portfolio
+        </span>
+
+        <span>
+          © 2026 · Semua hak dilindungi
+        </span>
       </footer>
     </div>
   );
 }
+

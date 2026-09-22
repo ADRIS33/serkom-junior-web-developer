@@ -685,3 +685,31 @@ a{
     gap:10px
   }
 }
+/* FOTO KEGIATAN */
+.kegiatan-photo {
+  width: 100%;
+  max-width: 520px;
+  margin: 30px auto;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  background: #fff;
+}
+
+.kegiatan-photo img {
+  display: block;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* FOTO KEGIATAN - HP */
+@media(max-width:550px) {
+  .kegiatan-photo {
+    max-width: 100%;
+  }
+
+  .kegiatan-photo img {
+    height: 240px;
+  }
+}
