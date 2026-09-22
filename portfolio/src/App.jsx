@@ -1,9 +1,9 @@
-
 import React from 'react';
 import Nav from './components/Nav';
 import Icon from './components/Icon';
 
 const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
+const baseUrl = import.meta.env.BASE_URL || '/';
 
 const skills = [
   ['01', 'Frontend', 'HTML · CSS · JavaScript · React'],
@@ -70,7 +70,7 @@ export default function App() {
             <div className="portrait-card">
               <div className="portrait" aria-label="Foto profil">
                 <img
-                  src="/images/foto-profil.jpg"
+                  src={`${baseUrl}images/foto-profil.jpg`}
                   alt="Foto Profil Moh. Adris A.W.F."
                   className="profile-photo"
                 />
@@ -441,7 +441,7 @@ export default function App() {
               {/* FOTO KEGIATAN */}
               <div className="kegiatan-photo">
                 <img
-                  src="/images/kegiatan.jpeg"
+                  src={`${baseUrl}images/kegiatan.jpeg`}
                   alt="Foto kegiatan"
                 />
               </div>
@@ -570,4 +570,3 @@ export default function App() {
     </div>
   );
 }
-
