@@ -1,0 +1,7 @@
+import React,{useEffect,useState} from 'react';
+import {Link,useNavigate} from 'react-router-dom';
+import Icon from './Icon'; import {getUser,logout,api} from '../api';
+export default function Navbar(){const [user,setUser]=useState(getUser()); const [count,setCount]=useState(0); const nav=useNavigate();
+ useEffect(()=>{const load=async()=>{if(localStorage.getItem('token')){try{const d=await api('/cart');setCount(d.totalItems)}catch{}}};load(); const fn=()=>setUser(getUser()); window.addEventListener('authchange',fn); window.addEventListener('cartchange',load); return()=>{window.removeEventListener('authchange',fn);window.removeEventListener('cartchange',load)}},[]);
+ const signout=()=>{logout();setUser(null);nav('/');window.dispatchEvent(new Event('authchange'));};
+ return <header className="site-header"><div className="nav-wrap"><Link to="/" className="brand"><span className="brand-mark"><Icon name="bag" size={22}/></span><span>Kriya<span>Kita</span></span></Link><nav className="nav-links"><Link to="/">Beranda</Link><Link to="/products">Koleksi</Link><Link to="/orders">Pesanan</Link>{user?.role==='admin'&&<Link to="/admin">Admin</Link>}</nav><div className="nav-actions"><Link to="/cart" className="cart-button" aria-label="Keranjang"><Icon name="bag" size={21}/>{count>0&&<b>{count}</b>}</Link>{user?<button className="user-chip" onClick={signout}><span>{user.name.slice(0,1).toUpperCase()}</span><em>Keluar</em></button>:<Link className="login-link" to="/login"><Icon name="user" size={18}/> Masuk</Link>}</div></div></header>}

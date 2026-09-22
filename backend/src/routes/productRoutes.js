@@ -1,0 +1,2 @@
+const router=require('express').Router(); const c=require('../controllers/productController'); const auth=require('../middleware/authMiddleware'); const admin=require('../middleware/adminMiddleware');
+router.get('/',c.getProducts); router.get('/:id',c.getProductById); router.post('/',auth,admin,c.createProduct); router.put('/:id',auth,admin,c.updateProduct); router.delete('/:id',auth,admin,c.deleteProduct); module.exports=router;
