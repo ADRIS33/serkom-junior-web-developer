@@ -448,18 +448,18 @@ export default function App() {
 
               <div className="biodata-list">
                 <div>
-                  <span>01</span>
-                  <strong>Kegiatan belajar</strong>
+                  <span></span>
+                  <strong></strong>
                 </div>
 
                 <div>
-                  <span>02</span>
-                  <strong>Workshop</strong>
+                  <span></span>
+                  <strong></strong>
                 </div>
 
                 <div>
-                  <span>03</span>
-                  <strong>Proyek</strong>
+                  <span></span>
+                  <strong></strong>
                 </div>
               </div>
             </div>
