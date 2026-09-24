@@ -531,7 +531,7 @@ export default function App() {
                 className="contact-mail"
                 href="mailto:hello@example.com"
               >
-                <Icon name="mail" /> hello@example.com
+                <Icon name="mail" /> mohammad.adris33@smk.belajar.id
               </a>
 
               <div className="contact-social">
