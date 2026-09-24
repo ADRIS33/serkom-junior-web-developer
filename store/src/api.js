@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'https://serkom-junior-web-developer-production.up.railway.app/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://serkom-junior-web-developer-production-bf3f.up.railway.app/api';
 
 export async function api(path, options={}) {
   const token = localStorage.getItem('token');
