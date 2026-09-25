@@ -1,6 +1,4 @@
-export const API_URL =
-  import.meta.env.VITE_API_URL ||
-  'https://backend-production-63406.up.railway.app/api';
+export const API_URL = 'http://localhost:5000/api';
 
 export async function api(path, options = {}) {
   const token = localStorage.getItem('token');
