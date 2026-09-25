@@ -2,7 +2,7 @@ import React from 'react';
 import Nav from './components/Nav';
 import Icon from './components/Icon';
 
-const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
+const storeUrl = import.meta.env.VITE_STORE_URL || 'https://serkom-junior-web-developer-production-bf3f.up.railway.app/';
 const baseUrl = import.meta.env.BASE_URL || '/';
 
 const skills = [
