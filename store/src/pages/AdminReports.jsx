@@ -1,18 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
+
 import { api, rupiah, getUser } from '../api';
 import Status from '../components/Status';
 
 const statusLabels = {
   pending: 'Menunggu',
+  paid: 'Dibayar',
   processing: 'Diproses',
   shipped: 'Dikirim',
   completed: 'Selesai',
   cancelled: 'Dibatalkan'
 };
 
+function formatTanggal(date) {
+  if (!date) return '-';
+
+  const d = new Date(`${date}T00:00:00`);
+
+  if (Number.isNaN(d.getTime())) return date;
+
+  return d.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit'
+  });
+}
+
 function cetakStruk(report) {
+  if (!report) return;
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -21,959 +48,505 @@ function cetakStruk(report) {
 
   let y = 10;
 
-  // =========================
-  // HEADER
-  // =========================
+  const line = (text = '', size = 9, bold = false) => {
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setFontSize(size);
+    doc.text(String(text), 5, y);
+    y += size * 0.55 + 2;
+  };
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('KRIYA KITA', 40, y, {
-    align: 'center'
-  });
+  const separator = () => {
+    doc.setDrawColor(150);
+    doc.line(5, y, 75, y);
+    y += 4;
+  };
 
-  y += 5;
+  line('KRIYA KITA', 15, true);
+  line('Laporan Penjualan', 10, true);
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  y += 2;
 
-  doc.text(
-    'Laporan Penjualan',
-    40,
-    y,
-    { align: 'center' }
-  );
+  if (report.range) {
+    line(
+      `Periode: ${report.range.start || '-'} s/d ${report.range.end || '-'}`,
+      8
+    );
+  }
 
-  y += 5;
+  separator();
 
-  doc.text(
-    'Kerajinan lokal Indonesia',
-    40,
-    y,
-    { align: 'center' }
-  );
+  line('RINGKASAN', 10, true);
 
-  y += 7;
+  if (report.summary) {
+    line(`Total pesanan : ${report.summary.total_orders ?? 0}`);
+    line(`Total omzet   : ${rupiah(report.summary.total_revenue ?? 0)}`);
+    line(`Total produk  : ${report.summary.total_items ?? 0}`);
+  }
 
-  doc.line(5, y, 75, y);
+  separator();
 
-  y += 6;
+  line('PENJUALAN HARIAN', 10, true);
 
-  // =========================
-  // PERIODE
-  // =========================
-
-  doc.setFontSize(8);
-
-  doc.text('Periode', 5, y);
-
-  doc.text(
-    `${report.range.from} s.d. ${report.range.to}`,
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 6;
-
-  doc.line(5, y, 75, y);
-
-  y += 7;
-
-  // =========================
-  // RINGKASAN
-  // =========================
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-
-  doc.text(
-    'RINGKASAN',
-    5,
-    y
-  );
-
-  y += 7;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-
-  doc.text(
-    'Total pesanan',
-    5,
-    y
-  );
-
-  doc.text(
-    String(report.summary.total_orders),
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 5;
-
-  doc.text(
-    'Item terjual',
-    5,
-    y
-  );
-
-  doc.text(
-    String(report.summary.total_items),
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 5;
-
-  doc.text(
-    'Total omzet',
-    5,
-    y
-  );
-
-  doc.text(
-    rupiah(report.summary.total_revenue),
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 5;
-
-  const average =
-    report.summary.total_orders
-      ? report.summary.total_revenue /
-        report.summary.total_orders
-      : 0;
-
-  doc.text(
-    'Rata-rata / pesanan',
-    5,
-    y
-  );
-
-  doc.text(
-    rupiah(average),
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 7;
-
-  doc.line(5, y, 75, y);
-
-  y += 7;
-
-  // =========================
-  // PENJUALAN HARIAN
-  // =========================
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-
-  doc.text(
-    'PENJUALAN HARIAN',
-    5,
-    y
-  );
-
-  y += 6;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-
-  doc.text(
-    'Tanggal',
-    5,
-    y
-  );
-
-  doc.text(
-    'Pesanan',
-    43,
-    y,
-    { align: 'center' }
-  );
-
-  doc.text(
-    'Omzet',
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 4;
-
-  doc.line(5, y, 75, y);
-
-  y += 5;
-
-  if (report.daily.length) {
-
+  if (report.daily?.length) {
     report.daily.forEach((item) => {
-
-      doc.text(
-        String(item.date),
-        5,
-        y
-      );
-
-      doc.text(
-        String(item.orders),
-        43,
-        y,
-        { align: 'center' }
-      );
-
-      doc.text(
-        rupiah(item.revenue),
-        75,
-        y,
-        { align: 'right' }
-      );
-
-      y += 5;
-
+      line(`${formatTanggal(item.date)} | ${item.orders ?? 0} pesanan`);
+      line(`  ${rupiah(item.revenue ?? 0)}`, 8);
     });
-
   } else {
-
-    doc.text(
-      'Tidak ada transaksi.',
-      5,
-      y
-    );
-
-    y += 5;
-
+    line('Belum ada data.');
   }
 
-  y += 2;
+  separator();
 
-  doc.line(5, y, 75, y);
+  line('PRODUK TERLARIS', 10, true);
 
-  y += 7;
-
-  // =========================
-  // PRODUK TERLARIS
-  // =========================
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-
-  doc.text(
-    'PRODUK TERLARIS',
-    5,
-    y
-  );
-
-  y += 6;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-
-  doc.text(
-    'Produk',
-    5,
-    y
-  );
-
-  doc.text(
-    'Qty',
-    43,
-    y,
-    { align: 'center' }
-  );
-
-  doc.text(
-    'Omzet',
-    75,
-    y,
-    { align: 'right' }
-  );
-
-  y += 4;
-
-  doc.line(5, y, 75, y);
-
-  y += 5;
-
-  if (report.top_products.length) {
-
-    report.top_products.forEach((item) => {
-
-      let name =
-        item.name || 'Produk';
-
-      if (name.length > 24) {
-        name =
-          name.substring(0, 24) +
-          '...';
-      }
-
-      doc.text(
-        name,
-        5,
-        y
+  if (report.top_products?.length) {
+    report.top_products.forEach((item, index) => {
+      line(`${index + 1}. ${item.name}`);
+      line(
+        `   ${item.total_sold ?? 0} terjual | ${rupiah(item.revenue ?? 0)}`,
+        8
       );
-
-      doc.text(
-        String(item.qty_sold),
-        43,
-        y,
-        { align: 'center' }
-      );
-
-      doc.text(
-        rupiah(item.revenue),
-        75,
-        y,
-        { align: 'right' }
-      );
-
-      y += 5;
-
     });
-
   } else {
-
-    doc.text(
-      'Belum ada produk terjual.',
-      5,
-      y
-    );
-
-    y += 5;
-
+    line('Belum ada data.');
   }
 
-  y += 2;
+  separator();
 
-  doc.line(5, y, 75, y);
+  line('STATUS PESANAN', 10, true);
 
-  y += 7;
-
-  // =========================
-  // STATUS PESANAN
-  // =========================
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-
-  doc.text(
-    'STATUS PESANAN',
-    5,
-    y
-  );
-
-  y += 7;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-
-  if (report.status_breakdown.length) {
-
+  if (report.status_breakdown?.length) {
     report.status_breakdown.forEach((item) => {
-
-      doc.text(
-        statusLabels[item.status] ||
-        item.status,
-        5,
-        y
-      );
-
-      doc.text(
-        String(item.total),
-        75,
-        y,
-        { align: 'right' }
-      );
-
-      y += 5;
-
+      const label = statusLabels[item.status] || item.status;
+      line(`${label}: ${item.total ?? 0}`);
     });
-
   } else {
-
-    doc.text(
-      'Tidak ada data.',
-      5,
-      y
-    );
-
-    y += 5;
-
+    line('Belum ada data.');
   }
+
+  separator();
 
   y += 3;
+  line('Terima kasih.', 9, true);
+  line('KRIYA KITA', 8);
 
-  doc.line(5, y, 75, y);
-
-  y += 7;
-
-  // =========================
-  // FOOTER
-  // =========================
-
-  doc.setFontSize(8);
-
-  doc.text(
-    'Terima kasih telah menggunakan',
-    40,
-    y,
-    { align: 'center' }
-  );
-
-  y += 4;
-
-  doc.text(
-    'Kriya Kita.',
-    40,
-    y,
-    { align: 'center' }
-  );
-
-  y += 5;
-
-  doc.setFontSize(7);
-
-  doc.text(
-    new Date().toLocaleString('id-ID'),
-    40,
-    y,
-    { align: 'center' }
-  );
-
-  // =========================
-  // SIMPAN PDF
-  // =========================
-
-  doc.save(
-    `struk-kriya-kita-${report.range.from}_${report.range.to}.pdf`
-  );
+  doc.save('laporan-penjualan-kriya-kita.pdf');
 }
 
 export default function AdminReports() {
+  const navigate = useNavigate();
 
-  const nav = useNavigate();
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const user = getUser();
-
-  const [report, setReport] =
-    useState(null);
-
-  const [from, setFrom] =
-    useState('');
-
-  const [to, setTo] =
-    useState('');
-
-  const [error, setError] =
-    useState('');
-
-  const [loading, setLoading] =
-    useState(true);
-
-  // =========================
-  // LOAD REPORT
-  // =========================
-
-  const load = (params = {}) => {
-
-    setLoading(true);
-
-    setError('');
-
-    const query =
-      new URLSearchParams(
-        params
-      ).toString();
-
-    api(
-      `/admin/reports/sales${
-        query
-          ? `?${query}`
-          : ''
-      }`
-    )
-      .then((data) => {
-
-        setReport(data);
-
-        setFrom(
-          data.range.from
-        );
-
-        setTo(
-          data.range.to
-        );
-
-      })
-      .catch((e) => {
-
-        setError(
-          e.message
-        );
-
-      })
-      .finally(() => {
-
-        setLoading(false);
-
-      });
-  };
-
-  // =========================
-  // CHECK ADMIN
-  // =========================
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
+    const user = getUser();
 
-    if (user?.role !== 'admin') {
-
-      nav('/');
-
+    if (!user) {
+      navigate('/login');
       return;
     }
 
-    load();
+    if (user.role !== 'admin') {
+      navigate('/');
+      return;
+    }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nav]);
+    loadReport();
+  }, []);
 
-  if (user?.role !== 'admin') {
-    return null;
+  async function loadReport(customStart = startDate, customEnd = endDate) {
+    try {
+      setLoading(true);
+      setError('');
+
+      let url = '/admin/reports/sales';
+
+      const params = new URLSearchParams();
+
+      if (customStart) {
+        params.append('start_date', customStart);
+      }
+
+      if (customEnd) {
+        params.append('end_date', customEnd);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await api.get(url);
+
+      setReport(response.data?.data || response.data);
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          'Gagal mengambil laporan penjualan.'
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
-  // =========================
-  // FILTER
-  // =========================
-
-  const applyFilter = (e) => {
-
+  function handleFilter(e) {
     e.preventDefault();
+    loadReport(startDate, endDate);
+  }
 
-    load({
-      from,
-      to
-    });
+  function resetFilter() {
+    setStartDate('');
+    setEndDate('');
+    loadReport('', '');
+  }
 
-  };
+  const chartData =
+    report?.daily?.map((item) => ({
+      tanggal: formatTanggal(item.date),
+      omzet: Number(item.revenue) || 0
+    })) || [];
+
+  if (loading) {
+    return (
+      <div className="admin-page">
+        <Status>Memuat laporan penjualan...</Status>
+      </div>
+    );
+  }
 
   return (
+    <div className="admin-page">
+      <div className="admin-container">
 
-    <div className="container page-shell">
+        <div className="admin-header">
+          <div>
+            <span className="admin-kicker">ADMIN</span>
+            <h1>Laporan Penjualan</h1>
+            <p>
+              Pantau omzet, pesanan, produk terlaris, dan status pesanan.
+            </p>
+          </div>
 
-      {/* BACK */}
+          <div className="admin-header-actions">
+            <Link to="/admin" className="admin-btn secondary">
+              ← Dashboard
+            </Link>
 
-      <Link
-        className="back-link"
-        to="/admin"
-      >
-        ← Dashboard
-      </Link>
-
-      {/* HEADER */}
-
-      <div className="admin-head">
-
-        <div>
-
-          <span className="eyebrow">
-            LAPORAN
-          </span>
-
-          <h1>
-            Laporan penjualan.
-          </h1>
-
-          <p>
-            Pantau omzet, jumlah pesanan,
-            dan produk terlaris pada periode tertentu.
-          </p>
-
+            <button
+              type="button"
+              className="admin-btn"
+              onClick={() => cetakStruk(report)}
+              disabled={!report}
+            >
+              🧾 Cetak Struk PDF
+            </button>
+          </div>
         </div>
 
-        {report && (
+        <div className="admin-table-wrap" style={{ marginBottom: 20 }}>
+          <div className="table-title">
+            <h2>Filter laporan</h2>
+            <span>Pilih periode penjualan</span>
+          </div>
 
-          <button
-            className="btn btn-secondary"
-            type="button"
-            onClick={() =>
-              cetakStruk(report)
-            }
+          <form
+            onSubmit={handleFilter}
+            style={{
+              display: 'flex',
+              gap: 12,
+              flexWrap: 'wrap',
+              padding: 16,
+              alignItems: 'end'
+            }}
           >
-            🧾 Cetak Struk PDF
-          </button>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: 6,
+                  fontSize: 13
+                }}
+              >
+                Tanggal mulai
+              </label>
 
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="admin-input"
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: 6,
+                  fontSize: 13
+                }}
+              >
+                Tanggal akhir
+              </label>
+
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="admin-input"
+              />
+            </div>
+
+            <button type="submit" className="admin-btn">
+              Terapkan
+            </button>
+
+            <button
+              type="button"
+              className="admin-btn secondary"
+              onClick={resetFilter}
+            >
+              Reset
+            </button>
+          </form>
+        </div>
+
+        {error && (
+          <div style={{ marginBottom: 20 }}>
+            <Status>{error}</Status>
+          </div>
         )}
 
-      </div>
+        {report && (
+          <>
+            <div
+              className="admin-stats"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: 16,
+                marginBottom: 20
+              }}
+            >
+              <div className="admin-stat-card">
+                <span>Total pesanan</span>
+                <strong>
+                  {report.summary?.total_orders ?? 0}
+                </strong>
+              </div>
 
-      {/* FILTER */}
+              <div className="admin-stat-card">
+                <span>Total omzet</span>
+                <strong>
+                  {rupiah(report.summary?.total_revenue ?? 0)}
+                </strong>
+              </div>
 
-      <form
-        className="filter-bar"
-        onSubmit={applyFilter}
-      >
+              <div className="admin-stat-card">
+                <span>Total produk terjual</span>
+                <strong>
+                  {report.summary?.total_items ?? 0}
+                </strong>
+              </div>
 
-        <input
-          type="date"
-          value={from}
-          onChange={(e) =>
-            setFrom(e.target.value)
-          }
-          max={
-            to || undefined
-          }
-        />
-
-        <input
-          type="date"
-          value={to}
-          onChange={(e) =>
-            setTo(e.target.value)
-          }
-          min={
-            from || undefined
-          }
-        />
-
-        <button
-          className="btn btn-primary"
-          type="submit"
-        >
-          Terapkan
-        </button>
-
-      </form>
-
-      {/* ERROR */}
-
-      {error && (
-
-        <Status type="error">
-          {error}
-        </Status>
-
-      )}
-
-      {/* LOADING */}
-
-      {loading && (
-
-        <Status>
-          Memuat laporan...
-        </Status>
-
-      )}
-
-      {/* REPORT */}
-
-      {!loading &&
-        report && (
-
-        <>
-
-          {/* STATISTIK */}
-
-          <div className="stats-grid">
-
-            <div>
-
-              <span>
-                Total pesanan
-              </span>
-
-              <strong>
-                {report.summary.total_orders}
-              </strong>
-
+              <div className="admin-stat-card">
+                <span>Produk terlaris</span>
+                <strong>
+                  {report.top_products?.[0]?.name || '-'}
+                </strong>
+              </div>
             </div>
 
-            <div>
+            {/* DIAGRAM BATANG */}
+            <div
+              className="admin-table-wrap"
+              style={{ marginBottom: 20 }}
+            >
+              <div className="table-title">
+                <h2>Grafik omzet</h2>
+                <span>Diagram batang per hari</span>
+              </div>
 
-              <span>
-                Item terjual
-              </span>
-
-              <strong>
-                {report.summary.total_items}
-              </strong>
-
-            </div>
-
-            <div>
-
-              <span>
-                Omzet periode ini
-              </span>
-
-              <strong>
-                {rupiah(
-                  report.summary.total_revenue
-                )}
-              </strong>
-
-            </div>
-
-            <div>
-
-              <span>
-                Rata-rata / pesanan
-              </span>
-
-              <strong>
-                {rupiah(
-                  report.summary.total_orders
-                    ? report.summary.total_revenue /
-                      report.summary.total_orders
-                    : 0
-                )}
-              </strong>
-
-            </div>
-
-          </div>
-
-          {/* PENJUALAN HARIAN */}
-
-          <div
-            className="admin-table-wrap"
-            style={{
-              marginBottom: 20
-            }}
-          >
-
-            <div className="table-title">
-
-              <h2>
-                Penjualan harian
-              </h2>
-
-              <span>
-                {report.range.from}
-                {' – '}
-                {report.range.to}
-              </span>
-
-            </div>
-
-            {report.daily.length ? (
-
-              <table className="simple-table">
-
-                <thead>
-
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Pesanan</th>
-                    <th>Omzet</th>
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {report.daily.map(
-                    (d) => (
-
-                    <tr
-                      key={d.date}
+              {chartData.length ? (
+                <div
+                  style={{
+                    width: '100%',
+                    height: 350,
+                    padding: '10px 0'
+                  }}
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={chartData}
+                      margin={{
+                        top: 10,
+                        right: 30,
+                        left: 30,
+                        bottom: 10
+                      }}
                     >
+                      <CartesianGrid strokeDasharray="3 3" />
 
-                      <td>
-                        {d.date}
-                      </td>
+                      <XAxis dataKey="tanggal" />
 
-                      <td>
-                        {d.orders}
-                      </td>
-
-                      <td>
-                        {rupiah(
-                          d.revenue
-                        )}
-                      </td>
-
-                    </tr>
-
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            ) : (
-
-              <Status>
-                Belum ada transaksi pada
-                periode ini.
-              </Status>
-
-            )}
-
-          </div>
-
-          {/* PRODUK TERLARIS */}
-
-          <div
-            className="admin-table-wrap"
-            style={{
-              marginBottom: 20
-            }}
-          >
-
-            <div className="table-title">
-
-              <h2>
-                Produk terlaris
-              </h2>
-
-              <span>
-                Top 10 berdasarkan
-                jumlah terjual
-              </span>
-
-            </div>
-
-            {report.top_products.length ? (
-
-              <table className="simple-table">
-
-                <thead>
-
-                  <tr>
-                    <th>Produk</th>
-                    <th>Terjual</th>
-                    <th>Omzet</th>
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {report.top_products.map(
-                    (p) => (
-
-                    <tr
-                      key={p.product_id}
-                    >
-
-                      <td>
-                        {p.name}
-                      </td>
-
-                      <td>
-                        {p.qty_sold}
-                      </td>
-
-                      <td>
-                        {rupiah(
-                          p.revenue
-                        )}
-                      </td>
-
-                    </tr>
-
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            ) : (
-
-              <Status>
-                Belum ada produk terjual
-                pada periode ini.
-              </Status>
-
-            )}
-
-          </div>
-
-          {/* STATUS PESANAN */}
-
-          <div className="admin-table-wrap">
-
-            <div className="table-title">
-
-              <h2>
-                Status pesanan
-              </h2>
-
-              <span>
-                Termasuk yang dibatalkan
-              </span>
-
-            </div>
-
-            <table className="simple-table">
-
-              <thead>
-
-                <tr>
-                  <th>Status</th>
-                  <th>Jumlah</th>
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-                {report.status_breakdown.length ? (
-
-                  report.status_breakdown.map(
-                    (s) => (
-
-                    <tr
-                      key={s.status}
-                    >
-
-                      <td>
-                        {
-                          statusLabels[
-                            s.status
-                          ] ||
-                          s.status
+                      <YAxis
+                        tickFormatter={(value) =>
+                          `Rp ${Number(value).toLocaleString('id-ID')}`
                         }
-                      </td>
+                      />
 
-                      <td>
-                        {s.total}
-                      </td>
+                      <Tooltip
+                        formatter={(value) => rupiah(value)}
+                      />
 
-                    </tr>
+                      <Bar
+                        dataKey="omzet"
+                        name="Omzet"
+                        fill="#8b5e3c"
+                        radius={[6, 6, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <Status>
+                  Belum ada data omzet pada periode ini.
+                </Status>
+              )}
+            </div>
 
-                  ))
+            <div
+              className="admin-table-wrap"
+              style={{ marginBottom: 20 }}
+            >
+              <div className="table-title">
+                <h2>Penjualan harian</h2>
+                <span>Omzet berdasarkan tanggal</span>
+              </div>
 
-                ) : (
+              {report.daily?.length ? (
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Pesanan</th>
+                        <th>Omzet</th>
+                      </tr>
+                    </thead>
 
-                  <tr>
+                    <tbody>
+                      {report.daily.map((item, index) => (
+                        <tr key={item.date || index}>
+                          <td>{item.date}</td>
+                          <td>{item.orders ?? 0}</td>
+                          <td>
+                            {rupiah(item.revenue ?? 0)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Status>
+                  Belum ada data penjualan harian.
+                </Status>
+              )}
+            </div>
 
-                    <td colSpan={2}>
-                      Tidak ada data.
-                    </td>
+            <div
+              className="admin-table-wrap"
+              style={{ marginBottom: 20 }}
+            >
+              <div className="table-title">
+                <h2>Produk terlaris</h2>
+                <span>Berdasarkan jumlah produk terjual</span>
+              </div>
 
-                  </tr>
+              {report.top_products?.length ? (
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Produk</th>
+                        <th>Terjual</th>
+                        <th>Omzet</th>
+                      </tr>
+                    </thead>
 
-                )}
+                    <tbody>
+                      {report.top_products.map((item, index) => (
+                        <tr key={item.id || index}>
+                          <td>{index + 1}</td>
+                          <td>{item.name}</td>
+                          <td>{item.total_sold ?? 0}</td>
+                          <td>
+                            {rupiah(item.revenue ?? 0)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Status>
+                  Belum ada data produk terlaris.
+                </Status>
+              )}
+            </div>
 
-              </tbody>
+            <div
+              className="admin-table-wrap"
+              style={{ marginBottom: 20 }}
+            >
+              <div className="table-title">
+                <h2>Status pesanan</h2>
+                <span>Distribusi status pesanan</span>
+              </div>
 
-            </table>
+              {report.status_breakdown?.length ? (
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Status</th>
+                        <th>Jumlah</th>
+                      </tr>
+                    </thead>
 
-          </div>
+                    <tbody>
+                      {report.status_breakdown.map((item, index) => (
+                        <tr key={item.status || index}>
+                          <td>
+                            {statusLabels[item.status] ||
+                              item.status}
+                          </td>
 
-        </>
-
-      )}
-
+                          <td>{item.total ?? 0}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Status>
+                  Belum ada data status pesanan.
+                </Status>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
-
   );
 }
