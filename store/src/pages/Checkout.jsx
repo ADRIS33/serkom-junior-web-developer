@@ -1,284 +1,345 @@
-
-
-import React,{useEffect,useState} from 'react';
-import {Link,useNavigate} from 'react-router-dom';
-import {api,rupiah} from '../api';
+import React,{useEffect,useState} from 'react'; 
+import {Link} from 'react-router-dom'; 
+import {api,rupiah} from '../api'; 
 import Status from '../components/Status';
 
-export default function Checkout(){
-  const nav=useNavigate();
-  const [cart,setCart]=useState(null);
+const labels={
+  pending:'Menunggu',
+  processing:'Diproses',
+  shipped:'Dikirim',
+  completed:'Selesai',
+  cancelled:'Dibatalkan'
+};
 
-  const [form,setForm]=useState({
-    recipient_name:'',
-    phone:'',
-    address:'',
-    payment_method:'bank_transfer'
-  });
+function printReceipt(order){
+  const orderNumber = String(order.id).padStart(4,'0');
+  const date = new Date(order.created_at).toLocaleString('id-ID');
 
-  const [error,setError]=useState('');
-  const [saving,setSaving]=useState(false);
+  const payment =
+    order.payment_method === 'cod'
+      ? 'COD'
+      : order.payment_method === 'ewallet'
+        ? 'E-wallet'
+        : 'Transfer bank';
+
+  const items = Array.isArray(order.items) ? order.items : [];
+
+  const itemsHtml = items.map(item => `
+    <tr>
+      <td>${item.product_name}</td>
+      <td class="center">${item.quantity}</td>
+      <td class="right">${rupiah(Number(item.price) * Number(item.quantity))}</td>
+    </tr>
+  `).join('');
+
+  const receipt = `
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8">
+      <title>Struk Order #${orderNumber}</title>
+
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 30px;
+          font-family: Arial, sans-serif;
+          color: #222;
+          background: #fff;
+        }
+
+        .receipt {
+          width: 80mm;
+          margin: 0 auto;
+        }
+
+        .header {
+          text-align: center;
+          border-bottom: 1px dashed #999;
+          padding-bottom: 15px;
+          margin-bottom: 15px;
+        }
+
+        .header h1 {
+          margin: 0 0 5px;
+          font-size: 22px;
+        }
+
+        .header p {
+          margin: 3px 0;
+          font-size: 12px;
+          color: #666;
+        }
+
+        .info {
+          font-size: 12px;
+          margin-bottom: 15px;
+        }
+
+        .info div {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 11px;
+        }
+
+        th {
+          text-align: left;
+          border-bottom: 1px solid #222;
+          padding: 6px 2px;
+        }
+
+        td {
+          padding: 7px 2px;
+          border-bottom: 1px dotted #ccc;
+          vertical-align: top;
+        }
+
+        .center {
+          text-align: center;
+        }
+
+        .right {
+          text-align: right;
+        }
+
+        .total {
+          border-top: 1px solid #222;
+          margin-top: 10px;
+          padding-top: 10px;
+          display: flex;
+          justify-content: space-between;
+          font-size: 15px;
+          font-weight: bold;
+        }
+
+        .footer {
+          text-align: center;
+          border-top: 1px dashed #999;
+          margin-top: 20px;
+          padding-top: 15px;
+          font-size: 11px;
+          color: #666;
+        }
+
+        @media print {
+          body {
+            padding: 0;
+          }
+
+          .receipt {
+            width: 80mm;
+          }
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="receipt">
+
+        <div class="header">
+          <h1>KriyaKita</h1>
+          <p>Kerajinan lokal, dibuat dengan tangan.</p>
+          <p>Struk Pembelian</p>
+        </div>
+
+        <div class="info">
+          <div>
+            <span>No. Order</span>
+            <strong>#${orderNumber}</strong>
+          </div>
+
+          <div>
+            <span>Tanggal</span>
+            <span>${date}</span>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <span>${labels[order.status] || order.status}</span>
+          </div>
+
+          <div>
+            <span>Pembayaran</span>
+            <span>${payment}</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th class="center">Qty</th>
+              <th class="right">Subtotal</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div class="total">
+          <span>TOTAL</span>
+          <span>${rupiah(order.total)}</span>
+        </div>
+
+        <div class="footer">
+          <p>Terima kasih telah berbelanja di KriyaKita.</p>
+          <p>Semoga karya lokal ini membawa cerita baik.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank', 'width=500,height=700');
+
+  if (!printWindow) {
+    alert('Popup diblokir browser. Izinkan popup untuk mencetak struk.');
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(receipt);
+  printWindow.document.close();
+
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
+}
+
+export default function Orders(){
+  const [orders,setOrders]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState(''); 
 
   useEffect(()=>{
     if(!localStorage.getItem('token')){
-      nav('/login');
+      setLoading(false);
       return;
     }
 
-    api('/cart')
-      .then(res=>setCart(res))
-      .catch(e=>setError(e.message));
-  },[nav]);
+    api('/orders')
+      .then(res => setOrders(Array.isArray(res) ? res : res.orders || []))
+      .catch(e=>setError(e.message))
+      .finally(()=>setLoading(false))
+  },[]); 
 
-  const submit=async e=>{
-    e.preventDefault();
-
-    // VALIDASI NAMA
-    if(!/^[a-zA-Z\s]+$/.test(form.recipient_name)){
-      setError('Nama penerima hanya boleh berisi huruf dan spasi.');
-      return;
-    }
-
-    // VALIDASI NOMOR WHATSAPP
-    if(!/^[0-9]+$/.test(form.phone)){
-      setError('Nomor WhatsApp hanya boleh berisi angka.');
-      return;
-    }
-
-    // VALIDASI PANJANG NOMOR
-    if(form.phone.length < 8){
-      setError('Nomor WhatsApp minimal 8 angka.');
-      return;
-    }
-
-    setSaving(true);
-    setError('');
-
-    try{
-      const r=await api('/orders',{
-        method:'POST',
-        body:JSON.stringify(form)
-      });
-
-      nav(`/orders?success=${r.order_id}`);
-
-    }catch(e){
-      setError(e.message);
-
-    }finally{
-      setSaving(false);
-    }
-  };
-
-  if(!cart){
-    return(
-      <div className="container page-shell">
-        {error
-          ? <Status type="error">{error}</Status>
-          : <Status>Memuat checkout...</Status>
-        }
+  if(!localStorage.getItem('token')) return (
+    <div className="container page-shell narrow">
+      <div className="empty-card">
+        <h1>Belum masuk.</h1>
+        <p>Masuk untuk melihat riwayat pesanan.</p>
+        <Link className="btn btn-primary" to="/login">Masuk</Link>
       </div>
-    );
-  }
+    </div>
+  ); 
 
-  if(!Array.isArray(cart.items) || !cart.items.length){
-    return(
-      <div className="container page-shell">
-        <Status type="info">
-          Keranjang kosong.
-          {' '}
-          <Link to="/products">
-            Kembali ke koleksi.
-          </Link>
-        </Status>
-      </div>
-    );
-  }
-
-  return(
+  return (
     <div className="container page-shell">
 
-      <Link className="back-link" to="/cart">
-        ← Kembali ke keranjang
-      </Link>
+      <div className="page-intro">
+        <div>
+          <span className="eyebrow">RIWAYAT PESANAN</span>
+          <h1>Pesanan saya.</h1>
+          <p>Pantau status karya yang sudah kamu pesan.</p>
+        </div>
+      </div>
+      
+      {loading ? (
+        <Status>Memuat pesanan...</Status>
+      ) : error ? (
+        <Status type="error">{error}</Status>
+      ) : !Array.isArray(orders) || !orders.length ? (
+        <div className="empty-card">
+          <h2>Belum ada pesanan.</h2>
+          <Link className="btn btn-primary" to="/products">
+            Lihat koleksi
+          </Link>
+        </div>
+      ) : (
+        <div className="orders-list">
 
-      <div className="checkout-grid">
+          {orders.map(o=>(
+            <article className="order-card" key={o.id}>
 
-        <form
-          className="form-card"
-          onSubmit={submit}
-        >
+              <div className="order-head">
+                <div>
+                  <span>
+                    ORDER #{String(o.id).padStart(4,'0')}
+                  </span>
 
-          <span className="eyebrow">
-            CHECKOUT
-          </span>
+                  <small>
+                    {new Date(o.created_at).toLocaleString('id-ID')}
+                  </small>
+                </div>
 
-          <h1>
-            Data pengiriman
-          </h1>
+                <b className={`badge badge-${o.status}`}>
+                  {labels[o.status]}
+                </b>
+              </div>
 
-          <p className="form-muted">
-            Isi data dengan benar agar pesanan mudah diproses.
-          </p>
+              <div className="order-items">
+                {Array.isArray(o.items) && o.items.map(i=>(
+                  <div key={i.id}>
+                    <span>
+                      {i.product_name} × {i.quantity}
+                    </span>
 
-          {/* NAMA PENERIMA */}
-          <label>
-            Nama penerima
+                    <b>
+                      {rupiah(Number(i.price)*Number(i.quantity))}
+                    </b>
+                  </div>
+                ))}
+              </div>
 
-            <input
-              required
-              minLength="3"
-              value={form.recipient_name}
-              onChange={e=>{
-                const value=e.target.value;
+              <div className="order-foot">
+                <span>
+                  {
+                    o.payment_method==='cod'
+                      ? 'COD'
+                      : o.payment_method==='ewallet'
+                        ? 'E-wallet'
+                        : 'Transfer bank'
+                  }
+                </span>
 
-                // Hanya huruf dan spasi
-                if(/^[a-zA-Z\s]*$/.test(value)){
-                  setForm({
-                    ...form,
-                    recipient_name:value
-                  });
+                <strong>
+                  {rupiah(o.total)}
+                </strong>
+              </div>
 
-                  setError('');
-                }
-              }}
-              placeholder="Nama lengkap"
-            />
-          </label>
+              <div style={{
+                marginTop:'16px',
+                display:'flex',
+                justifyContent:'flex-end'
+              }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => printReceipt(o)}
+                >
+                  🧾 Cetak Struk
+                </button>
+              </div>
 
-          {/* NOMOR WHATSAPP */}
-          <label>
-            Nomor WhatsApp
-
-            <input
-              required
-              minLength="8"
-              inputMode="numeric"
-              value={form.phone}
-              onChange={e=>{
-                const value=e.target.value;
-
-                // Hanya angka
-                if(/^[0-9]*$/.test(value)){
-                  setForm({
-                    ...form,
-                    phone:value
-                  });
-
-                  setError('');
-                }
-              }}
-              placeholder="08xxxxxxxxxx"
-            />
-          </label>
-
-          {/* ALAMAT */}
-          <label>
-            Alamat lengkap
-
-            <textarea
-              required
-              minLength="10"
-              rows="4"
-              value={form.address}
-              onChange={e=>{
-                setForm({
-                  ...form,
-                  address:e.target.value
-                });
-
-                setError('');
-              }}
-              placeholder="Jalan, nomor, kelurahan, kecamatan, kota..."
-            />
-          </label>
-
-          {/* METODE PEMBAYARAN */}
-          <label>
-            Metode pembayaran
-
-            <select
-              value={form.payment_method}
-              onChange={e=>{
-                setForm({
-                  ...form,
-                  payment_method:e.target.value
-                });
-              }}
-            >
-              <option value="bank_transfer">
-                Transfer bank
-              </option>
-
-              <option value="ewallet">
-                E-wallet
-              </option>
-
-              <option value="cod">
-                COD
-              </option>
-            </select>
-          </label>
-
-          {error && (
-            <Status type="error">
-              {error}
-            </Status>
-          )}
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn btn-primary btn-wide"
-          >
-            {saving
-              ? 'Memproses...'
-              : 'Buat pesanan'
-            }
-          </button>
-
-        </form>
-
-        <aside className="summary-card">
-
-          <span className="eyebrow">
-            PESANAN
-          </span>
-
-          {cart.items.map(i=>(
-            <div
-              className="mini-line"
-              key={i.id}
-            >
-              <span>
-                {i.name} × {i.quantity}
-              </span>
-
-              <b>
-                {rupiah(i.subtotal)}
-              </b>
-            </div>
+            </article>
           ))}
 
-          <hr/>
-
-          <div className="summary-total">
-
-            <span>
-              Total
-            </span>
-
-            <strong>
-              {rupiah(cart.total)}
-            </strong>
-
-          </div>
-
-        </aside>
-
-      </div>
-
+        </div>
+      )}
     </div>
   );
 }
-
