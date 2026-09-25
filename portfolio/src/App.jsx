@@ -2,7 +2,7 @@ import React from 'react';
 import Nav from './components/Nav';
 import Icon from './components/Icon';
 
-const storeUrl = import.meta.env.VITE_STORE_URL || 'https://serkom-junior-web-developer-production-bf3f.up.railway.app/';
+const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
 const baseUrl = import.meta.env.BASE_URL || '/';
 
 const skills = [
@@ -70,7 +70,7 @@ export default function App() {
             <div className="portrait-card">
               <div className="portrait" aria-label="Foto profil">
                 <img
-                  src={`${baseUrl}images/poto_profil.jpeg`}
+                  src={`${baseUrl}images/foto-profil.jpg`}
                   alt="Foto Profil Moh. Adris A.W.F."
                   className="profile-photo"
                 />
@@ -112,22 +112,22 @@ export default function App() {
 
               <div className="biodata-list">
                 <div>
-                  <span>Nama : </span>
+                  <span>Nama=</span>
                   <strong>Moh. Adris A.W.F</strong>
                 </div>
 
                 <div>
-                  <span>Status : </span>
+                  <span>Status=</span>
                   <strong>Pelajar / Siswa RPL</strong>
                 </div>
 
                 <div>
-                  <span>Bidang : </span>
+                  <span>Bidang=</span>
                   <strong>Web Development</strong>
                 </div>
 
                 <div>
-                  <span>Prinsip : </span>
+                  <span>Prinsip=</span>
                   <strong>Belajar · Berproses · Berkarya</strong>
                 </div>
               </div>
@@ -156,22 +156,22 @@ export default function App() {
 
               <div className="biodata-list">
                 <div>
-                  <span>Jabatan : </span>
+                  <span>Jabatan=</span>
                   <strong>Pelajar / Junior Web Developer</strong>
                 </div>
 
                 <div>
-                  <span>Instansi : </span>
+                  <span>Instansi=</span>
                   <strong>SMKN 1 Jenpo</strong>
                 </div>
 
                 <div>
-                  <span>Bidang : </span>
+                  <span>Bidang=</span>
                   <strong>Frontend · Backend · Database</strong>
                 </div>
 
                 <div>
-                  <span>Target : </span>
+                  <span>Target=</span>
                   <strong>Mengembangkan kemampuan profesional</strong>
                 </div>
               </div>
