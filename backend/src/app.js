@@ -7,10 +7,11 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true }));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -25,8 +26,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Cek errorMiddleware.js dulu untuk nama export-nya, lalu aktifkan:
-// const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-// app.use(notFound); app.use(errorHandler);
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;
