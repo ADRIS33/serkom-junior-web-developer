@@ -70,7 +70,7 @@ export default function App() {
             <div className="portrait-card">
               <div className="portrait" aria-label="Foto profil">
                 <img
-                  src={`${baseUrl}images/foto-profil.jpg`}
+                  src={`${baseUrl}images/foto-profil.jpeg`}
                   alt="Foto Profil Moh. Adris A.W.F."
                   className="profile-photo"
                 />
